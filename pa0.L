@@ -1,3 +1,8 @@
+(*
+	 Connor Lirot ccl676
+	 Stephen Mayne stm732 
+*)
+
 fun printGrades with students = 
 	if isNil #students then
 		0
@@ -8,8 +13,8 @@ fun printGrades with students =
 in
 fun PrintAndRemoveFromList with max, temp, students, orderedPair =
 	if isNil #students then
-		let _ = print !orderedPair in
 		let _ = print !#orderedPair in
+		let _ = print !orderedPair in
 		temp
 	else
 		if(!!students=max) then
@@ -35,8 +40,8 @@ fun getHighest with students,currentMax =
 in
 fun getStudents with weights,students =
 		let _ = (print "Do you want to add another student?") in
-		let add = readInt in
-		if add=1 then
+		let add = readString in
+		if ((add="y")|(add="Y")) then
 			(collectGrades "" weights 0 weights students)
 		else
 			(printGrades students)
@@ -49,7 +54,6 @@ fun collectGrades with student,weights,average,finalWeights,finalStudents =
 		else
 			if isNil #weights then
 				let newStudents = ((average/100)@student)@finalStudents in
-
 				(getStudents finalWeights newStudents)
 			else
 				let _ = (print "Please enter a grade of the student:") in
@@ -72,6 +76,14 @@ fun sumList with l,sum =
 			let newSum = sum+!l in
 			(sumList #l newSum)
 in
+fun listReverse with l,m =
+	if isNil #l then
+		m
+	else
+		let new_m = !l@m in
+		let new_l = #l in
+		(listReverse new_l new_m)
+in
 fun main with n,l = 
 	if n=0 then 
 		let sum = (sumList l 0) in
@@ -89,7 +101,7 @@ fun main with n,l =
 			let _ = (print "input out of range") in
 			(main n l)
 		else
-		let newlist = currentWeight@l in
+		let newlist = (listReverse currentWeight@l "") in
 		(main(n-1) newlist) 
 in
 let _ = (print "Please enter the number of assignments:") in
