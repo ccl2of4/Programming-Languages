@@ -9,7 +9,7 @@ fun printGrades with students =
 fun PrintAndRemoveFromList with temp, students, max, orderedPair =
 	let newTemp = temp in
 	let newStudents = students in
-	if isNil #students then 
+	if isNil students then 
 		let _ = print !orderedPair in
 		let _ = print !#orderedPair in
 		let _ = print temp in
@@ -94,6 +94,13 @@ fun collectGrades with student,weights,average,finalWeights,finalStudents =
 			else
 				let _ = (print "Please enter a grade of the student:") in
 				let currentGrade = readInt in
+				if currentGrade < 0 then
+					let _ = (print "input out of range") in
+					(collectGrades student weights average finalWeights finalStudents)
+				else if currentGrade > 100 then
+					let _ = (print "input out of range") in
+					(collectGrades student weights average finalWeights finalStudents)
+				else
 				let currentWeight = !weights in
 				let currentAverage = average + currentGrade*currentWeight in
 				(collectGrades student #weights currentAverage finalWeights finalStudents)
@@ -107,7 +114,6 @@ fun sumList with l,sum =
 			(sumList #l newSum)
 in
 
-let x = (print "Please enter the number of assignments:") + readInt in
 	fun main with n,l = 
 		if n=0 then 
 			let sum = (sumList l 0) in
@@ -117,6 +123,16 @@ let x = (print "Please enter the number of assignments:") + readInt in
 				(collectGrades "" l 0 l "")
 		else
 			let _ = (print "Please enter a weight:") in
-			let newlist = readInt@l in
+			let currentWeight = readInt in
+			if currentWeight < 0 then
+				let _ = (print "input out of range") in
+				(main n l)
+			else if currentWeight > 100 then
+				let _ = (print "input out of range") in
+				(main n l)
+			else
+			let newlist = currentWeight@l in
 			(main(n-1) newlist) in
+let _ = (print "Please enter the number of assignments:") in
+let x = readInt in
 	(main x "")
