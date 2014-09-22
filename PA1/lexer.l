@@ -139,6 +139,22 @@ DIGIT [0-9]
 	return TOKEN_NEQ;
 }
 
+<COMMENT,INITIAL>"(*" {
+	if(++comment_depth == 1) {
+		BEGIN (COMMENT);
+	}
+}
+
+<COMMENT>"*)" {
+	if(!--comment_depth) {
+		BEGIN (INITIAL);	
+	}
+}
+
+<COMMENT>[^*()]*|[(][^*]|[^*][)]|[^(][*][^)] {
+	/* wait for comment to end */
+}
+
 {WHITESPACE} {
   /* Do nothing */
 }
