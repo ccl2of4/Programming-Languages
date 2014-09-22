@@ -23,8 +23,11 @@ int comment_depth = 0;
 WHITESPACE [ \t\f\r\v]+
 NEWLINE [\n]
 COMMA [,]
-LETTER [a-zA-Z]
+LETTER [a-zA-Z_]
 DIGIT [0-9]
+STRINGCHARS [a-zA-Z0-9 !#\$\%&'\(\)\*\+,\-\.\/:;\<=\>\?@\[\\\]\^_'\{\|\}~]
+QUOTE [\"]
+ESCAPE[\\]
 
 %x STRING
 %x COMMENT 
@@ -171,6 +174,11 @@ DIGIT [0-9]
 [0-9]+ {
 	SET_LEXEME(yytext);
  	return TOKEN_INT;
+}
+
+{QUOTE}(({STRINGCHARS}*)({ESCAPE}({QUOTE}))*({STRINGCHARS}*))*({QUOTE}) {
+	SET_LEXEME(yytext);
+	return TOKEN_STRING;
 }
 
 {LETTER}({LETTER}|{DIGIT})* {
