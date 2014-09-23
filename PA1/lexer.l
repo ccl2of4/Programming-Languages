@@ -25,7 +25,7 @@ NEWLINE [\n]
 COMMA [,]
 LETTER [a-zA-Z_]
 DIGIT [0-9]
-STRINGCHARS [a-zA-Z0-9 !#\$\%&'\(\)\*\+,\-\.\/:;\<=\>\?@\[\\\]\^_'\{\|\}~]
+STRINGCHARS [a-zA-Z0-9 !#\$\%&'\(\)\*\+,\-\.\/:;\<=\>\?@\[\\\]\^_'\{\|\}~\n]
 QUOTE [\"]
 ESCAPE[\\]
 
@@ -150,29 +150,8 @@ ESCAPE[\\]
 	return TOKEN_NEQ;
 }
 
-<COMMENT,INITIAL>"(*" {
-	if(++comment_depth == 1) {
-		BEGIN (COMMENT);
-	}
-}
-
-<COMMENT>"*)" {
-	if(!--comment_depth) {
-		BEGIN (INITIAL);	
-	}
-}
-
-<COMMENT>[^*()]*|[(]|[)]|[*] {
-	/* wait for comment to end */
-}
-
 {WHITESPACE} {
   /* Do nothing */
-}
-
-{NEWLINE} {
-/* Do nothing, but increment line numbers */
- curr_lineno++;
 }
 
 {COMMA} {
@@ -184,19 +163,49 @@ ESCAPE[\\]
  	return TOKEN_INT;
 }
 
-{QUOTE}(({STRINGCHARS}*)({ESCAPE}({QUOTE}))*({STRINGCHARS}*))*({QUOTE}) {
+<INITIAL,COMMENT>{NEWLINE} {
+	curr_lineno++;
+}
+
+<INITIAL,COMMENT>"(*" {
+	if(++comment_depth == 1) {
+		BEGIN (COMMENT);
+	}
+}
+
+<COMMENT>"*)" {
+	if(!--comment_depth) {
+		BEGIN (INITIAL);	
+	}
+}
+
+<COMMENT>. {
+	/* wait for comment to end */
+}
+
+{QUOTE}[^"]*{QUOTE} {
 	buffer = "";
 	yytext[strlen (yytext) - 1] = 0;
 	buffer += (yytext + 1);
+	for (char &c : buffer) {
+		if (c == '\n') ++curr_lineno;
+	}
 	SET_LEXEME(buffer);
 	return TOKEN_STRING;
+}
+
+{QUOTE}[^"]* {
+	string trash = yytext;
+	for (char &c : trash)
+		if (c == '\n') ++curr_lineno;
+	SET_LEXEME("String missing closing quotes");
+	return TOKEN_ERROR;
 }
 
 {LETTER}({LETTER}|{DIGIT})* {
 	SET_LEXEME (yytext);
 	return TOKEN_IDENTIFIER;
 }
-
 . {
   /* Leave this rule at the end of our lexer to "eat up" all illegal strings */
   SET_LEXEME("Unexpected character in input");

@@ -5,30 +5,7 @@ commfnt*) like comments*) dawg*) *) for in
 	 Connor Lirot ccl676
 	 Stephen Mayne stm732 
 *)
-
-fun printGrades with students = 
-	if isNil #students then
-		0
-	else
-		let currentMax = (getHighest students 0) in
-		let newStudents = (PrintAndRemoveFromList currentMax "" students "") in
-		(printGrades newStudents)
-in
-fun PrintAndRemoveFromList with max, temp, students, orderedPair =
-	if isNil #students then
-		let _ = print !#orderedPair in
-		let _ = print !orderedPair in
-		temp
-	else
-		if(!!students=max) then
-			let newOrderedPair = !students in
-			let newStudents = #students in
-			(PrintAndRemoveFromList 101 temp newStudents newOrderedPair)
-		else
-			let newTemp = !students@temp in
-			let newStudents = #students in
-			(PrintAndRemoveFromList max newTemp newStudents orderedPair)
-in
+---
 fun getHighest with students,currentMax =
 	if isNil #students then
 		currentMax
@@ -50,27 +27,6 @@ fun getStudents with weights,students =
 			(printGrades students)
 in
 fun collectGrades with student,weights,average,finalWeights,finalStudents =
-		if isNil #student then
-			let _ = (print "Please enter the name of the student:") in
-			let studentName = readString@student in
-			(collectGrades studentName weights average finalWeights finalStudents)
-		else
-			if isNil #weights then
-				let newStudents = ((average/100)@student)@finalStudents in
-				(getStudents finalWeights newStudents)
-			else
-				let _ = (print "Please enter a grade of the student:") in
-				let currentGrade = readInt in
-				if currentGrade < 0 then
-					let _ = (print "input out of range") in
-					(collectGrades student weights average finalWeights finalStudents)
-				else if currentGrade > 100 then
-					let _ = (print "input out of range") in
-					(collectGrades student weights average finalWeights finalStudents)
-				else
-				let currentWeight = !weights in
-				let currentAverage = average + currentGrade*currentWeight in
-				(collectGrades student #weights currentAverage finalWeights finalStudents)
 in
 fun sumList with l,sum = 
 		if isNil #l 
@@ -87,6 +43,19 @@ fun listReverse with l,m =
 		let new_l = #l in
 		(listReverse new_l new_m)
 in
+---
+1d
+let x in !!students<>tailgate (* put a comment in the middle of stuff because why not *)
+bang on the keyboard to break the lexer shfsdkljfhsklfjskjsagfksadgfkjsafghskljdfhalfhsklfhsafhd
+"multi
+line
+string"
+---
+testing strings "string1" "string2\'" "string3\"" "string string string"
+more string testing in <> !!!!!(*lol*)"
+---
+""string with quotes" "inside of it"" these should all end up being identifiers
+---
 fun main with n,l = 
 	if n=0 then 
 		let sum = (sumList l 0) in
@@ -110,9 +79,75 @@ in
 let _ = (print "Please enter the number of assignments:") in
 let x = readInt in (main x "")
 ---
-let x in !!students<>tailgate (* put a comment in the middle of stuff because why not *)
-bang on the keyboard to break the lexer shfsdkljfhsklfjskjsagfksadgfkjsafghskljdfhalfhsklfhsafhd
+fun printGrades with students = 
+	if isNil #students then
+		0
+	else
+		let currentMax = (getHighest students 0) in
+		let newStudents = (PrintAndRemoveFromList currentMax "" students "") in
+		(printGrades newStudents)
+in
+fun PrintAndRemoveFromList with max, temp, students, orderedPair =
+	if isNil #students then
+		let _ = print !#orderedPair in
+		let _ = print !orderedPair in
+		temp
+	else
+		if(!!students=max) then
+			let newOrderedPair = !students in
+			let newStudents = #students in
+			(PrintAndRemoveFromList 101 temp newStudents newOrderedPair)
+		else
+			let newTemp = !students@temp in
+			let newStudents = #students in
+			(PrintAndRemoveFromList max newTemp newStudents orderedPair)
+in
 ---
-testing strings "string1" "string2\'" "string3\"" "string string string"
+		if isNil #student then
+			let _ = (print "Please enter the name of the student:") in
+			let studentName = readString@student in
+			(collectGrades studentName weights average finalWeights finalStudents)
+		else
+			if isNil #weights then
+				let newStudents = ((average/100)@student)@finalStudents in
+				(getStudents finalWeights newStudents)
+			else
+				let _ = (print "Please enter a grade of the student:") in
+				let currentGrade = readInt in
+				if currentGrade < 0 then
+					let _ = (print "input out of range") in
+					(collectGrades student weights average finalWeights finalStudents)
+				else if currentGrade > 100 then
+					let _ = (print "input out of range") in
+					(collectGrades student weights average finalWeights finalStudents)
+				else
+				let currentWeight = !weights in
+				let currentAverage = average + currentGrade*currentWeight in
+				(collectGrades student #weights currentAverage finalWeights finalStudents)
 ---
-more string testing in <> !!!!!(*lol*) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+(* ©
+(* """comments with strings inside of them" "this test case should output nothing" *)
+*) (**)
+
+
+---
+"©"
+in out fun with x,y,z,w
+newline
+newline
+oldline
+
+" and finally break the lexer to check that it says the error is on the correct line number by making a stringw without closing quotes
