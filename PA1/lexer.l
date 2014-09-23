@@ -138,7 +138,15 @@ ESCAPE[\\]
 	return TOKEN_EQ;
 }
 
-[<>] {
+[<] {
+	return TOKEN_LT;
+}
+
+[>] {
+	return TOKEN_GT;
+}
+
+"<>" {
 	return TOKEN_NEQ;
 }
 
@@ -177,7 +185,10 @@ ESCAPE[\\]
 }
 
 {QUOTE}(({STRINGCHARS}*)({ESCAPE}({QUOTE}))*({STRINGCHARS}*))*({QUOTE}) {
-	SET_LEXEME(yytext);
+	buffer = "";
+	yytext[strlen (yytext) - 1] = 0;
+	buffer += (yytext + 1);
+	SET_LEXEME(buffer);
 	return TOKEN_STRING;
 }
 
