@@ -1,1 +1,2 @@
-(33 1 "duck" identifier)
+let x = 5 in
+	x + 10

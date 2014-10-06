@@ -95,7 +95,7 @@ TOKEN_STRING
 TOKEN_IDENTIFIER
 {
 	string lexeme = GET_LEXEME($1);
-  	$$ =  AstIdentifier::make(lexeme);
+  	$$ = AstIdentifier::make(lexeme);
 }  
 |
 expression TOKEN_PLUS expression 
