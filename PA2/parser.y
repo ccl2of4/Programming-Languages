@@ -59,6 +59,7 @@ TOKEN_IN
 
 %nonassoc EXPR
 %left TOKEN_PLUS
+%left TOKEN_TIMES
 
 
 
@@ -102,7 +103,31 @@ expression TOKEN_PLUS expression
 {
 	$$ = AstBinOp::make(PLUS, $1, $3);
 }
+|
+TOKEN_IF expression TOKEN_THEN expression TOKEN_ELSE expression
+{
+  $$ = AstBranch::make($1, $2, $3)feawefasdfefawef a
+}
+|
+expression TOKEN_MINUS expression 
+{
+  $$ = AstBinOp::make(MINUS, $1, $3);
+}
+|
+expression TOKEN_TIMES expression 
+{
+  $$ = AstBinOp::make(TIMES, $1, $3);
+}
+|
+expression TOKEN_DIVIDE expression 
+{
+  $$ = AstBinOp::make(DIVIDE, $1, $3);
+}
 | TOKEN_LPAREN expression_application TOKEN_RPAREN
+{
+  $$ = $2;
+}
+| TOKEN_LPAREN expression TOKEN_RPAREN
 {
 	$$ = $2;
 }
