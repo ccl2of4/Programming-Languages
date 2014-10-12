@@ -78,37 +78,41 @@ program: expression
 
 
 
-expression: TOKEN_INT 
+expression: TOKEN_LET TOKEN_IDENTIFIER TOKEN_EQ expression TOKEN_IN expression
 {
-  	string lexeme = GET_LEXEME($1);
-  	long int val = string_to_int(lexeme);
-  	Expression* e = AstInt::make(val);
-  	$$ = e;
-} 
+  AstIdentifier *identifier = AstIdentifier::make(GET_LEXEME($2));
+  $$ = AstLet::make(identifier, $4, $6);}
 |
-TOKEN_STRING 
+TOKEN_FUN TOKEN_IDENTIFIER TOKEN_WITH identifier_list TOKEN_EQ expression TOKEN_IN expression
 {
-	string lexeme = GET_LEXEME($1);
-  	Expression* e = AstString::make(lexeme);
-  	$$ = e;
+  $$ = NULL;
 }
 |
-TOKEN_IDENTIFIER
+TOKEN_LAMBDA identifier_list TOKEN_DOT expression
 {
-	string lexeme = GET_LEXEME($1);
-  	$$ = AstIdentifier::make(lexeme);
-}  
+  assert ($2->get_type() == AST_IDENTIFIER_LIST);
+  AstIdentifierList *l = static_cast<AstIdentifierList*>($2);
+  $$ = AstLambda::make(l, $4);
+}
+|
+TOKEN_IF expression TOKEN_THEN expression TOKEN_ELSE expression %prec EXPR
+{
+  $$ = AstBranch::make($2, $4, $6);
+}
 |
 expression TOKEN_PLUS expression 
 {
-	$$ = AstBinOp::make(PLUS, $1, $3);
+  $$ = AstBinOp::make(PLUS, $1, $3);
 }
 |
-TOKEN_IF expression TOKEN_THEN expression TOKEN_ELSE expression
+expression TOKEN_AND expression
 {
-  $$ = AstBranch::make($1, $2, $3)feawefasdfefawef a
+  $$ = AstBinOp::make(AND, $1, $3);
 }
-|
+expression TOKEN_OR expression
+{
+  $$ = AstBinOp::make(OR, $1, $3);
+}
 expression TOKEN_MINUS expression 
 {
   $$ = AstBinOp::make(MINUS, $1, $3);
@@ -123,11 +127,104 @@ expression TOKEN_DIVIDE expression
 {
   $$ = AstBinOp::make(DIVIDE, $1, $3);
 }
-| TOKEN_LPAREN expression_application TOKEN_RPAREN
+|
+expression TOKEN_EQ expression
+{
+  $$ = AstBinOp::make(EQ, $1, $3);
+}
+|
+expression TOKEN_NEQ expression
+{
+  $$ = AstBinOp::make(NEQ, $1, $3);
+}
+|
+expression TOKEN_LT expression
+{
+  $$ = AstBinOp::make(LT, $1, $3);
+}
+|
+expression TOKEN_LEQ expression
+{
+  $$ = AstBinOp::make(LEQ, $1, $3);
+}
+|
+expression TOKEN_GT expression
+{
+  $$ = AstBinOp::make(GT, $1, $3);
+}
+|
+expression TOKEN_GEQ expression
+{
+  $$ = AstBinOp::make(GEQ, $1, $3);
+}
+|
+TOKEN_INT 
+{
+  	string lexeme = GET_LEXEME($1);
+  	long int val = string_to_int(lexeme);
+  	Expression* e = AstInt::make(val);
+  	$$ = e;
+} 
+|
+TOKEN_STRING 
+{
+	string lexeme = GET_LEXEME($1);
+  	Expression* e = AstString::make(lexeme);
+  	$$ = e;
+}
+|
+TOKEN_LPAREN expression_application TOKEN_RPAREN
 {
   $$ = $2;
 }
-| TOKEN_LPAREN expression TOKEN_RPAREN
+|
+TOKEN_PRINT expression
+{
+  $$ = AstUnOp::make(PRINT, $2);
+}
+|
+TOKEN_READINT
+{
+  $$ = AstRead::make(true);
+}
+|
+TOKEN_READSTRING
+{
+  $$ = AstRead::make(false);
+}
+|
+TOKEN_HD expression
+{
+  $$ = AstUnOp::make(HD, $2);
+}
+|
+TOKEN_TL expression
+{
+  $$ = AstUnOp::make(TL, $2);
+}
+|
+expression TOKEN_CONS expression
+{
+  $$ = AstBinOp::make(CONS, $1, $3);
+}
+|
+TOKEN_NIL
+{
+  $$ = AstNil::make();
+}
+|
+TOKEN_ISNIL expression
+{
+  $$ = AstUnOp::make(ISNIL, $2);
+}
+|
+TOKEN_IDENTIFIER
+{
+	string lexeme = GET_LEXEME($1);
+  $$ = AstIdentifier::make(lexeme);
+}  
+|
+TOKEN_LPAREN expression TOKEN_RPAREN
 {
 	$$ = $2;
 }
@@ -141,7 +238,6 @@ TOKEN_ERROR
    yyerror(error.c_str());
    YYERROR;
 }
-
 
 
 
@@ -161,4 +257,18 @@ expression_application expression
 }
 
 
-  
+
+identifier_list: TOKEN_IDENTIFIER
+{
+  AstIdentifier *id = AstIdentifier::make(GET_LEXEME($1));
+  $$ = AstIdentifierList::make(id);
+}
+|
+TOKEN_IDENTIFIER TOKEN_COMMA identifier_list
+{
+  assert($3->get_type() == AST_IDENTIFIER_LIST);
+  AstIdentifierList *l = static_cast<AstIdentifierList*>($3);
+  AstIdentifier *id = AstIdentifier::make(GET_LEXEME($1));
+  l = l->append_id(id);
+  $$ = l;
+}
