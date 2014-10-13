@@ -78,14 +78,33 @@ program: expression
 
 
 
-expression: TOKEN_LET TOKEN_IDENTIFIER TOKEN_EQ expression TOKEN_IN expression
+expression: TOKEN_LET identifier TOKEN_EQ expression TOKEN_IN expression
 {
-  AstIdentifier *identifier = AstIdentifier::make(GET_LEXEME($2));
-  $$ = AstLet::make(identifier, $4, $6);}
+  assert($2->get_type() == AST_IDENTIFIER);
+  $$ = AstLet::make(
+    static_cast<AstIdentifier*>($2),
+    $4,
+    $6
+  );
+}
 |
-TOKEN_FUN TOKEN_IDENTIFIER TOKEN_WITH identifier_list TOKEN_EQ expression TOKEN_IN expression
+TOKEN_FUN identifier TOKEN_WITH identifier_list TOKEN_EQ expression TOKEN_IN expression
 {
-  $$ = NULL;
+  assert($2->get_type() == AST_IDENTIFIER);
+  assert($4->get_type() == AST_IDENTIFIER_LIST);
+  
+  AstLambda *lambda_expr = AstLambda::make(
+    static_cast<AstIdentifierList*>($4),
+    $6
+  );
+  
+  AstLet *let = AstLet::make(
+    static_cast<AstIdentifier*>($2),
+    lambda_expr,
+    $8
+  );
+
+  $$ = let;
 }
 |
 TOKEN_LAMBDA identifier_list TOKEN_DOT expression
@@ -218,10 +237,9 @@ TOKEN_ISNIL expression
   $$ = AstUnOp::make(ISNIL, $2);
 }
 |
-TOKEN_IDENTIFIER
+identifier
 {
-	string lexeme = GET_LEXEME($1);
-  $$ = AstIdentifier::make(lexeme);
+  $$ = $1;
 }  
 |
 TOKEN_LPAREN expression TOKEN_RPAREN
@@ -258,17 +276,26 @@ expression_application expression
 
 
 
-identifier_list: TOKEN_IDENTIFIER
+identifier_list: identifier
 {
-  AstIdentifier *id = AstIdentifier::make(GET_LEXEME($1));
-  $$ = AstIdentifierList::make(id);
+  assert ($1->get_type() == AST_IDENTIFIER);
+  $$ = AstIdentifierList::make(
+    static_cast<AstIdentifier*>($1)
+  );
 }
 |
-TOKEN_IDENTIFIER TOKEN_COMMA identifier_list
+identifier TOKEN_COMMA identifier_list
 {
   assert($3->get_type() == AST_IDENTIFIER_LIST);
-  AstIdentifierList *l = static_cast<AstIdentifierList*>($3);
-  AstIdentifier *id = AstIdentifier::make(GET_LEXEME($1));
+  assert($1->get_type() == AST_IDENTIFIER);
+  AstIdentifierList *l = static_cast<AstIdentifierList*>$3;
+  AstIdentifier *id = static_cast<AstIdentifier*>$1;
   l = l->append_id(id);
   $$ = l;
+}
+
+identifier: TOKEN_IDENTIFIER
+{
+  AstIdentifier *id = AstIdentifier::make(GET_LEXEME($1));
+  $$ = id;
 }
