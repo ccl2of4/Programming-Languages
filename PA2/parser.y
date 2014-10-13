@@ -128,10 +128,12 @@ expression TOKEN_AND expression
 {
   $$ = AstBinOp::make(AND, $1, $3);
 }
+|
 expression TOKEN_OR expression
 {
   $$ = AstBinOp::make(OR, $1, $3);
 }
+|
 expression TOKEN_MINUS expression 
 {
   $$ = AstBinOp::make(MINUS, $1, $3);

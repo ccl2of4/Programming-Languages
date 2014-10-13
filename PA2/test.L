@@ -1,1 +1,1 @@
-fun f with x,y = x + y in (f 1 2)
+0|1
