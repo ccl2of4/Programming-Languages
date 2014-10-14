@@ -58,10 +58,14 @@ TOKEN_IN
 
 
 %nonassoc EXPR
-%left TOKEN_PLUS
-%left TOKEN_TIMES
-
-
+%left TOKEN_PRINT
+%left TOKEN_EQ TOKEN_NEQ TOKEN_LT TOKEN_GT TOKEN_LEQ TOKEN_GEQ
+%left TOKEN_AND TOKEN_OR
+%left TOKEN_PLUS TOKEN_MINUS
+%left TOKEN_TIMES TOKEN_DIVIDE
+%left TOKEN_ISNIL
+%right TOKEN_CONS
+%left TOKEN_HD TOKEN_TL
 
 %%
 
@@ -78,7 +82,7 @@ program: expression
 
 
 
-expression: TOKEN_LET identifier TOKEN_EQ expression TOKEN_IN expression
+expression: TOKEN_LET identifier TOKEN_EQ expression TOKEN_IN expression %prec EXPR
 {
   assert($2->get_type() == AST_IDENTIFIER);
   $$ = AstLet::make(
@@ -88,7 +92,7 @@ expression: TOKEN_LET identifier TOKEN_EQ expression TOKEN_IN expression
   );
 }
 |
-TOKEN_FUN identifier TOKEN_WITH identifier_list TOKEN_EQ expression TOKEN_IN expression
+TOKEN_FUN identifier TOKEN_WITH identifier_list TOKEN_EQ expression TOKEN_IN expression %prec EXPR
 {
   assert($2->get_type() == AST_IDENTIFIER);
   assert($4->get_type() == AST_IDENTIFIER_LIST);
@@ -107,7 +111,7 @@ TOKEN_FUN identifier TOKEN_WITH identifier_list TOKEN_EQ expression TOKEN_IN exp
   $$ = let;
 }
 |
-TOKEN_LAMBDA identifier_list TOKEN_DOT expression
+TOKEN_LAMBDA identifier_list TOKEN_DOT expression %prec EXPR
 {
   assert ($2->get_type() == AST_IDENTIFIER_LIST);
   AstIdentifierList *l = static_cast<AstIdentifierList*>($2);
@@ -277,7 +281,6 @@ expression_application expression
 }
 
 
-
 identifier_list: identifier
 {
   assert ($1->get_type() == AST_IDENTIFIER);
@@ -286,14 +289,13 @@ identifier_list: identifier
   );
 }
 |
-identifier TOKEN_COMMA identifier_list
+identifier_list TOKEN_COMMA identifier
 {
-  assert($3->get_type() == AST_IDENTIFIER_LIST);
-  assert($1->get_type() == AST_IDENTIFIER);
-  AstIdentifierList *l = static_cast<AstIdentifierList*>$3;
-  AstIdentifier *id = static_cast<AstIdentifier*>$1;
-  l = l->append_id(id);
-  $$ = l;
+  assert($1->get_type() == AST_IDENTIFIER_LIST);
+  assert($3->get_type() == AST_IDENTIFIER);
+  AstIdentifierList *l = static_cast<AstIdentifierList*>$1;
+  AstIdentifier *id = static_cast<AstIdentifier*>$3;
+  $$ = l->append_id(id);
 }
 
 identifier: TOKEN_IDENTIFIER
