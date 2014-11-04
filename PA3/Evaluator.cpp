@@ -28,8 +28,6 @@ void report_error(Expression* e, const string & s)
 
 }
 
-
-
 Evaluator::Evaluator()
 {
 	sym_tab.push();
@@ -99,8 +97,8 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 		(eval_e1->get_type() == AST_LIST || eval_e2->get_type() == AST_LIST))
 			report_error (b, "Binop @ is the only legal binop for lists");
 
-	if (eval_e1->get_type() != eval_e2->get_type()) {
-		cout << eval_e1->to_string() << endl << eval_e2->to_string() << endl;
+	if (b->get_binop_type() != CONS &&
+		(eval_e1->get_type() != eval_e2->get_type())) {
 		report_error(b, "Binop can only be applied to expressions of the same type");
 	}
 
@@ -132,6 +130,7 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 				report_error(b, "Binop X cannot be applied to strings");
 			}
 			else assert(false);
+			break;
 		}
 		case TIMES:
 		{
@@ -144,6 +143,7 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 				report_error(b, "Binop X cannot be applied to strings");
 			}
 			else assert(false);	
+			break;
 		}
 		case DIVIDE:
 		{
@@ -156,6 +156,7 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 				report_error(b, "Binop X cannot be applied to strings");
 			}
 			else assert(false);
+			break;
 		}
 		case EQ:
 		{
