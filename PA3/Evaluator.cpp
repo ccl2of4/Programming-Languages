@@ -69,6 +69,9 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 	Expression* eval_e1 = eval(e1);
 	Expression* eval_e2 = eval(e2);
 	bool error = false;
+
+	Expression* res_exp = NULL;
+
 	switch(b->get_binop_type())
 	{
 
@@ -78,13 +81,13 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 		{
 			int i1 =  static_cast<AstInt *>(eval_e1)->get_int();
 			int i2 =  static_cast<AstInt *>(eval_e2)->get_int();
-			return AstInt::make(i1+i2);
+			res_exp = AstInt::make(i1+i2);
 		}
 		else if(eval_e1->get_type()== AST_STRING && eval_e2->get_type() == AST_STRING )
 		{
 			string s1 =  static_cast<AstString *>(eval_e1)->get_string();
 			string s2 =  static_cast<AstString *>(eval_e2)->get_string();
-			return AstString::make(s1+s2);
+			res_exp = AstString::make(s1+s2);
 		}
 		else
 		{
@@ -152,13 +155,8 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 		string op 
 		report_error(b, )*/
 	}
-	return 0;
+	return res_exp;
 }
-
-
-
-
-
 
 Expression* Evaluator::eval(Expression* e)
 {
@@ -185,6 +183,28 @@ Expression* Evaluator::eval(Expression* e)
 		return AstString::make(input);
 
 
+
+		break;
+	}
+	case AST_BINOP:
+	{
+		AstBinOp* b = static_cast<AstBinOp*>(e);
+		res_exp = eval_binop(b);
+		break;
+	}
+	case AST_LET:
+	{
+		sym_tab.push();
+		AstLet* l = static_cast<AstLet*>(e);
+		Expression *e1 = l->get_val();
+		Expression *e2 = l->get_body();
+		Expression *eval_e1 = eval(e1);
+
+		sym_tab.add(l->get_id(), eval_e1);
+
+		Expression *eval_e2 = eval(e2);
+		res_exp = eval_e2;
+		sym_tab.pop();
 		break;
 	}
 	case AST_INT:
@@ -192,10 +212,10 @@ Expression* Evaluator::eval(Expression* e)
 		res_exp = e;
 		break;
 	}
-	case AST_BINOP:
+	case AST_IDENTIFIER:
 	{
-		AstBinOp* b = static_cast<AstBinOp*>(e);
-		res_exp = eval_binop(b);
+		AstIdentifier* id = static_cast<AstIdentifier*>(e);
+		res_exp = sym_tab.find(id);
 		break;
 	}
 	//ADD CASES FOR ALL EXPRESSIONS!!
