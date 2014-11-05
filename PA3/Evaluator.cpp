@@ -359,19 +359,6 @@ Expression* Evaluator::eval(Expression* e)
 			if (expressions.size() == 1) {
 				res_exp = e1;
 			}
-			else if (expressions.size() == 2) {
-				Expression *e2 = expressions[1];
-				Expression *eval_e1 = eval(e1);
-				if (eval_e1->get_type() == AST_LAMBDA) {
-					AstLambda *l = static_cast<AstLambda*>(eval_e1);
-					AstIdentifier *id = l->get_formal();
-					Expression *new_body = l->get_body()->substitute(id,e2);
-					res_exp = eval(new_body);
-				}
-				else {
-					report_error(e, "Only lambda expressions can be applied to other expressions");
-				}
-			}
 			else {
 				Expression *e2 = expressions[1];
 				Expression *eval_e1 = eval(e1);
