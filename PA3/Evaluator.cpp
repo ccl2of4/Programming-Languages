@@ -127,7 +127,7 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 				res_exp = AstInt::make(i1-i2);
 			}
 			else if (eval_e1->get_type() == AST_STRING) {
-				report_error(b, "Binop X cannot be applied to strings");
+				report_error(b, "Binop - cannot be applied to strings");
 			}
 			else assert(false);
 			break;
@@ -140,7 +140,7 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 				res_exp = AstInt::make(i1*i2);
 			}
 			else if (eval_e1->get_type() == AST_STRING) {
-				report_error(b, "Binop X cannot be applied to strings");
+				report_error(b, "Binop * cannot be applied to strings");
 			}
 			else assert(false);	
 			break;
@@ -153,7 +153,7 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 				res_exp = AstInt::make(i1/i2);
 			}
 			else if (eval_e1->get_type() == AST_STRING) {
-				report_error(b, "Binop X cannot be applied to strings");
+				report_error(b, "Binop / cannot be applied to strings");
 			}
 			else assert(false);
 			break;
@@ -196,7 +196,7 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 				res_exp = AstInt::make(i1<i2);
 			}
 			else if(eval_e1->get_type()== AST_STRING ) {
-				report_error(b, "Binop X cannot be applied to strings");
+				report_error(b, "Binop < cannot be applied to strings");
 			}
 			else assert(false);
 			break;	
@@ -209,7 +209,7 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 				res_exp = AstInt::make(i1<=i2);
 			}
 			else if(eval_e1->get_type()== AST_STRING ) {
-				report_error(b, "Binop X cannot be applied to strings");
+				report_error(b, "Binop <= cannot be applied to strings");
 			}
 			else assert(false);
 			break;	
@@ -222,7 +222,7 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 				res_exp = AstInt::make(i1>i2);
 			}
 			else if(eval_e1->get_type()== AST_STRING ) {
-				report_error(b, "Binop X cannot be applied to strings");
+				report_error(b, "Binop > cannot be applied to strings");
 			}
 			else assert(false);
 			break;	
@@ -235,7 +235,7 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 				res_exp = AstInt::make(i1>=i2);
 			}
 			else if(eval_e1->get_type()== AST_STRING ) {
-				report_error(b, "Binop X cannot be applied to strings");
+				report_error(b, "Binop >= cannot be applied to strings");
 			}
 			else assert(false);
 			break;	
@@ -248,7 +248,7 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 				res_exp = AstInt::make(i1&&i2);
 			}
 			else if (eval_e1->get_type() == AST_STRING) {
-				report_error(b, "Binop X cannot be applied to strings");
+				report_error(b, "Binop & cannot be applied to strings");
 			}
 			else assert(false);
 			break;
@@ -261,7 +261,7 @@ Expression* Evaluator::eval_binop(AstBinOp* b)
 				res_exp = AstInt::make(i1||i2);
 			}
 			else if (eval_e1->get_type() == AST_STRING) {
-				report_error(b, "Binop X cannot be applied to strings");
+				report_error(b, "Binop | cannot be applied to strings");
 			}
 			else assert(false);
 			break;
