@@ -304,7 +304,7 @@ Expression* Evaluator::eval(Expression* e)
 		{
 			AstIdentifier *id = static_cast<AstIdentifier*>(e);
 			if( !(res_exp = sym_tab.find(id)) )
-					report_error(e, "Identifier ID is not bound in current context");
+					report_error(e, string("Identifier ") + id->get_id() + " is not bound in current context");
 			break;
 		}
 		case AST_LET:
